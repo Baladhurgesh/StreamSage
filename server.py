@@ -16,7 +16,7 @@ handler.setFormatter(formatter)
 app.logger.addHandler(handler)
 app.logger.setLevel(logging.DEBUG)
 
-SAVE_DIRECTORY = '/Users/barathwajanandan/Documents/ws/AGIHouse/audio'
+SAVE_DIRECTORY = '/Users/barathwajanandan/Documents/ws/AGIHouse/StreamSage/audio'
 
 # Create the directory if it doesn't exist
 os.makedirs(SAVE_DIRECTORY, exist_ok=True)
