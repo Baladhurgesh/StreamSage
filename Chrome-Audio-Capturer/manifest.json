@@ -26,15 +26,17 @@
   "commands": {
     "start": {
       "suggested_key": {
-        "default": "Ctrl+Shift+S",
-        "mac": "Command+Shift+U"
+        "default": "Alt+5",
+        "mac": "Alt+5",
+        "windows": "Alt+5"
       },
       "description": "Start Capture"
     },
     "stop": {
       "suggested_key": {
-        "default": "Ctrl+Shift+X",
-        "mac": "Ctrl+Shift+U"
+        "default": "Alt+6",
+        "mac": "Alt+6",
+        "windows": "Alt+6"
       },
       "description": "Stop Capture"
     }

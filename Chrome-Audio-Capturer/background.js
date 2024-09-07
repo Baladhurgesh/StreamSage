@@ -205,11 +205,13 @@ const audioCapture = (timeLimit, muteTab, format, quality, limitRemoved) => {
     chrome.runtime.onMessage.addListener(onStopClick);
     mediaRecorder.onComplete = (recorder, blob) => {
       audioURL = window.URL.createObjectURL(blob);
-      // if(completeTabID) {
-      //   chrome.tabs.sendMessage(completeTabID, {type: "encodingComplete", audioURL});
-      // }
 
-      chrome.downloads.download({url: audioURL, filename: `recorded_audio.mp3`, saveAs: false});
+      chrome.downloads.download({
+        url: audioURL,
+        filename: `recorded_audio.mp3`,
+        conflictAction: 'overwrite',
+        saveAs: false
+      });
 
       mediaRecorder = null;
     }
