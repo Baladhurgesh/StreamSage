@@ -2,7 +2,7 @@ from dotenv import load_dotenv
 import os
 from groq import Groq
 
-from local_tts import synthesize_speech
+from audio_utils import Piper
 
 # Load environment variables from .env file
 load_dotenv()
@@ -15,6 +15,10 @@ transcriber = Groq(api_key=os.getenv('GROQ_API_KEY'))
 chat_client = Groq(api_key=os.getenv('GROQ_API_KEY2'))
 
 # Function to interact with the chat model
+        # 4. If the transcription doesn't contain enough information to fully answer the question, acknowledge this and offer the best possible interpretation or suggestion based on what's available.
+        # 5. Consider potential visual elements that might not be captured in the transcription but could be relevant to the user's question.
+        # 6. Provide your answer in a conversational tone, as if you're a helpful companion watching the video alongside the user.
+        # 7. If appropriate, suggest what the user might want to pay attention to next in the video to gain more clarity.
 def chat_with_model(context, question, model="llama3-8b-8192"):
     try:
         prompt = f"""
@@ -28,12 +32,8 @@ def chat_with_model(context, question, model="llama3-8b-8192"):
         1. Analyze the provided transcription carefully, keeping in mind it's from a live video the user is watching right now.
         2. Consider the real-time nature of the content and any potential gaps or ambiguities in the transcription.
         3. Address the user's confusion directly, providing a clear and helpful explanation based on the context.
-        4. If the transcription doesn't contain enough information to fully answer the question, acknowledge this and offer the best possible interpretation or suggestion based on what's available.
-        5. Consider potential visual elements that might not be captured in the transcription but could be relevant to the user's question.
-        6. Provide your answer in a conversational tone, as if you're a helpful companion watching the video alongside the user.
-        7. If appropriate, suggest what the user might want to pay attention to next in the video to gain more clarity.
 
-        Please provide your response to help the user understand better:
+        Do not talk about the video or the user's question. Just provide a response to the user's question briefly.
         """
 
         response = chat_client.chat.completions.create(
@@ -86,8 +86,18 @@ def main():
 
         # Synthesize speech for the user's question
         
-        question_audio_file = synthesize_speech(user_question, "user_question.wav")
-        print(f"User question audio saved to: {question_audio_file}")
+        # Initialize Piper TTS engine
+        piper = Piper()
+
+        # Generate speech for the user's question
+        question_audio_file = piper.generate_speech(user_question, "user_question.wav")
+
+        if question_audio_file:
+            print(f"User question audio saved to: {question_audio_file}")
+            # Play the generated audio
+            piper.play_audio(question_audio_file)
+        else:
+            print("Failed to generate speech for the user's question.")
 
         # Call the chat_with_ai function with the transcription and user question
         ai_response = chat_with_model(transcription, user_question)
@@ -95,8 +105,14 @@ def main():
         # Print the AI's response
         print("\nAI Assistant's Response:")
         print(ai_response)
-        
-        answer_audio_file = synthesize_speech(ai_response, "answer.wav")
+
+        answer_audio_file = piper.generate_speech(ai_response, "answer.wav")
+        if answer_audio_file:
+            print(f"AI answer audio saved to: {answer_audio_file}")
+            # Play the generated audio
+            piper.play_audio(answer_audio_file)
+        else:
+            print("Failed to generate speech for the AI's answer.")
 
     except Exception as e:
         print(f"An error occurred: {str(e)}")
